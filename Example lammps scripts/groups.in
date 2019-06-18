@@ -1,0 +1,43 @@
+# Tell Atomify where initial camera position should be
+#/camera position 35 90 40
+#/camera viewcenter 35 35 5
+# Information about atoms for coloring and bonds
+#/atom 1 silicon
+#/atom 2 oxygen
+#/bond 1 2 2.6
+#package omp 8
+#suffix omp
+
+units metal
+boundary p p p
+
+atom_style atomic
+
+read_data betany.data
+
+replicate 7 3 3
+
+pair_style vashishta
+pair_coeff * * SiO2.vashishta Si O
+mass 1 28.08
+mass 2 15.9994
+variable c equal ly/2
+variable d equal lx/2
+
+region plane1 plane 0 $c 0 0 1 0
+region plane2 plane $d 0 0 1 0 0
+region plane12 intersect 2 plane1 plane2
+
+velocity all create 300.0 277387 mom yes
+
+thermo 100
+thermo_style custom step temp ke pe etotal press spcpu cpuremain
+
+fix nvt all nvt temp 300 300 1.0
+timestep 0.002
+dump dump1 all atom 100 dump.test
+run 200
+
+delete_atoms region plane12
+
+run 200
