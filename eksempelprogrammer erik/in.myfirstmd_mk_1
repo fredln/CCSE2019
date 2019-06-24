@@ -1,0 +1,75 @@
+# Kommentar i LAMMPS
+
+
+# Angi hvilke enheter du vil jobbe med
+units metal
+
+# 'metal' er et sett med enheter der f.eks
+# lengde måles i Angstrom [Å] (tilsvarer 0.1 nanometer), 
+# tid måles i picosekunder [ps],
+# masse måles i gram/mol [u]
+# og temperatur måles i Kelvin [K]
+# Søk "units" i LAMMPS-dokumentasjonen for fullstendig
+# oversikt
+
+
+
+# Angi antall dimensjoner du vil simulere i
+# (pga betacristobalite.data er du nødt til å simulere
+# i tre dimensjoner)
+dimension 3
+
+
+
+# Angi rammebetingelser i x, y og z-retning
+# p står for periodisk
+boundary p p p
+
+
+
+# Bestem hvilke egenskaper atomene skal ha.
+# 'atomic' er et sett med default egenskaper
+# (egenskaper som ikke er default er
+# f.eks elektrisk ladning og spinn)
+atom_style atomic
+
+
+
+# Les fra fil som bestemmer hvordan enhetscellen ser ut
+read_data betacristobalite.data
+
+
+
+# Bruk vashishta-potensialet
+pair_style vashishta
+pair_coeff	* * SiO2.vashishta Si O
+
+
+
+# Angi massen til atomene i gram/mol
+mass 1 28.08 					# Silisium
+mass 2 15.9994				# Oksygen
+
+
+
+# Bestem antall enhetsceller i x, y og z-retning
+replicate 5 5 5
+
+# (replicate bestemmer samtidig størrelsen
+# på simuleringsboksen)
+
+
+# Gi alle atomer en hastighet
+fix nvt all nvt temp 300 300 1.0
+
+# (Dette er en såkalt "fix" som vi skal
+# snakke mer om senere)
+
+
+
+# Bestem tidssteg i antall ps
+timestep 0.002
+
+
+# Bestem antall tidssteg du vil simulere i 
+run 100

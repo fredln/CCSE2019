@@ -1,0 +1,52 @@
+include in.header
+
+timestep 0.002
+
+velocity all create 300 277385 mom yes loop geom
+fix nvt all nvt temp 300 300 1.0
+
+replicate 10 10 10
+
+
+
+# Definer et område formet som
+# en kule med radius lx/2 og sentrum i midten av
+# simuleringsboksen
+
+variable x equal lx/2
+variable y equal ly/2
+variable z equal lz/2
+
+variable R equal lx/2
+
+region kule sphere $x $y $z $R
+
+
+
+# Sett alle atomer som befinner seg i
+# området "kule" inn i en gruppe  
+
+group kule region kule
+
+
+
+# Sett alle atomer som ikke befinner seg i
+# området "kule" inn i gruppa "ikke_kule"
+
+# 'all' er en default-gruppe
+
+group ikke_kule subtract all kule
+
+
+
+# Kjør noen tidssteg
+run 30
+
+
+
+# Slett alle atomer som er medlem av gruppa
+# "ikke_kule"
+
+delete_atoms group ikke_kule
+
+run 100

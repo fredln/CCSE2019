@@ -1,0 +1,68 @@
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+
+read_data betacristobalite.data
+pair_style vashishta
+pair_coeff	* * SiO2.vashishta Si O
+
+mass 1 28.08
+mass 2 15.9994
+
+timestep 0.002
+
+velocity all create 300 277385 mom yes loop geom
+fix nvt all nvt temp 300 300 1.0
+
+
+# Definer noen variabler for å
+# bestemme størelsen på systemet
+
+variable x equal 10
+variable y equal 5
+variable z equal 5
+
+replicate $x $y $z
+
+# For å bruke en variabel må det stå
+# et $-tegn foran variabelnavnet
+
+
+
+# Regning med variabeler
+
+variable a equal 2
+variable b equal 2
+
+variable c equal $a+$b
+
+# Regneoperasjoner er stort sett som i Python
+# med unntak av ^-tegn for potenser
+
+
+# Default variabler
+
+# lx, ly og lz er default-variabler
+# som angir størrelsen på simuleringsboksen
+# i hhv. x, y og z-retning i antall Å
+# (siden vi bruker units metal)
+
+
+run 1000
+
+
+
+# Alle kommandoene fra linje 1 til og med
+# linje 11 kommer du sannsynligvis til å legge
+# til i starten av hvert eneste program du lager.
+# Hvis du vil kan du lage et program som kun
+# inneholder disse kommandoene og så kalle programmet
+# f.eks 'in.header'. Hvis du da skriver
+
+# 'include in.header' 
+
+# i starten av programmet er alle disse
+# kommandoene inkludert slik at du slipper å
+# kopiere de over hver gang du lager et nytt
+# program.
