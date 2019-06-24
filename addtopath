@@ -1,0 +1,4 @@
+export PATH=$PATH:~/ovito-3.0.0-dev200-x86_64/bin
+export PATH=$PATH:/mn/kvant/felles/lammps/src
+export PATH=$PATH:/usr/lib64/openmpi/bin
+export PATH=$PATH:/mn/kvant/felles/atomify
