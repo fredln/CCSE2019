@@ -1,0 +1,96 @@
+# Tell Atomify where initial camera position should be
+#/camera position 35 90 40
+#/camera viewcenter 18 18 18
+# Information about atoms for coloring and bonds
+#/atom 1 silicon
+#/atom 2 oxygen
+#/bond 1 2 2.6
+#package omp 8
+#suffix omp
+
+# Information about atoms for coloring and bonds
+#/atom 1 silicon
+#/atom 2 oxygen
+#/bond 1 2 2.6
+#package omp 8
+#suffix omp
+
+units metal
+boundary p p p
+
+atom_style atomic
+
+read_data ../betany.data
+
+replicate 20 14 12
+
+pair_style usc
+pair_coeff * * ../SiO2H2O.vashishta Si O H
+pair_modify coord 2 1 2.0 0.3
+pair_modify coord 2 3 1.4 0.3
+
+mass 1 28.08
+mass 2 15.9994
+mass 3 1.00794
+
+velocity all create 300.0 277387 mom yes
+
+variable d equal ($(lx)-40)
+variable c equal ly/2
+variable n_y equal cos(PI/18)
+variable n_x1 equal sin(PI/18)
+variable n_x2 equal -sin(PI/18) 
+
+region plane1 plane $d $c 0 ${n_x1} ${n_y} 0 side in
+region plane2 plane $d $c 0 ${n_x2} ${n_y} 0 side out
+region plane12 intersect 2 plane1 plane2
+delete_atoms region plane12
+
+
+variable ext equal 1.4
+
+thermo_style custom step temp ke pe etotal press spcpu cpuremain
+change_box all x scale ${ext} boundary m p p 
+fix xwalls all wall/reflect xlo EDGE xhi EDGE
+
+fix passivate all passivate 
+run 1
+unfix passivate
+
+write_dump all xyz xyz.passivated
+write_data data.setup_passivated
+
+variable water_g_per_mole equal 18.01528
+variable water_g_pr_liter equal 1000
+variable vbox equal ($(lz)*$(ly)*(${ext}-1)*$(lx)*1E-27/${ext})
+variable vsprekk equal 40*40*$(lz)*tan(PI/18)*1E-27
+variable volume equal (${vsprekk}+${vbox})
+variable N_per_mole equal 6.02214076E23
+variable number_of_molecules equal round(${water_g_pr_liter}*${volume}*${N_per_mole}/(${water_g_per_mole}))
+print "Antall"
+print "${number_of_molecules}"
+print "${volume}"
+print "${water_g_pr_liter}*${volume}"
+
+
+
+print """
+tolerance 2.0
+
+filetype xyz
+
+output xyz.water
+
+nloop 1000
+
+structure xyz.passivated
+	number 1
+	fixed 0. 0. 0. 0. 0. 0.
+end structure
+
+structure ../water.xyz
+	number ${number_of_molecules}
+	inside box 0. 0. 0. $(lx) $(ly) $(lz)
+end structure
+""" file add_water.inp
+
